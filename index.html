@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title> </title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; min-height: 100vh; }
+
+.login-screen {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0d5c8a, #20B2AA);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 24px;
+}
+.login-brand { text-align: center; margin-bottom: 36px; }
+.login-title { font-size: 34px; font-weight: 800; color: white; letter-spacing: 2px; }
+.login-title .tech { color: #00C853; }
+.login-sub { font-size: 11px; color: rgba(255,255,255,0.65); letter-spacing: 3px; margin-top: 4px; }
+.login-card {
+  background: white; border-radius: 20px; padding: 28px;
+  width: 100%; max-width: 340px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.login-card h2 { font-size: 18px; color: #0d5c8a; margin-bottom: 20px; text-align: center; }
+.login-group { margin-bottom: 14px; }
+.login-group label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 6px; }
+.login-group select, .login-group input {
+  width: 100%; padding: 12px 14px; border: 1.5px solid #e2e8f0;
+  border-radius: 10px; font-size: 15px; color: #333;
+}
+.btn-login {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, #0d5c8a, #20B2AA);
+  color: white; border: none; border-radius: 10px;
+  font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 8px;
+}
+.login-error { color: #e53e3e; font-size: 13px; text-align: center; margin-top: 10px; display: none; }
+
+.app-screen { display: none; }
+.header {
+  background: linear-gradient(135deg, #0d5c8a, #20B2AA);
+  padding: 10px 16px 8px; padding-left: 60px;
+  display: flex; flex-direction: row; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.header-text { text-align: left; }
+.header-title { font-size: 22px; font-weight: 800; letter-spacing: 2px; color: white; }
+.header-title .tech { color: #00C853; }
+.header-sub { font-size: 9px; color: rgba(255,255,255,0.65); letter-spacing: 2px; }
+.header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+.user-badge {
+  background: rgba(255,255,255,0.15); border-radius: 12px;
+  padding: 4px 12px; font-size: 11px; color: white; font-weight: 600;
+}
+.user-badge.manager { background: #00C853; color: #0d5c8a; }
+.btn-logout {
+  font-size: 11px; color: rgba(255,255,255,0.7);
+  background: none; border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px; padding: 3px 10px; cursor: pointer;
+}
+
+.nav { display: flex; background: #0d5c8a; border-top: 1px solid rgba(255,255,255,0.1); }
+.nav-btn {
+  flex: 1; padding: 10px 4px; color: rgba(255,255,255,0.6);
+  border: none; background: none; font-size: 12px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.nav-btn.active { color: #20B2AA; border-bottom: 2px solid #20B2AA; }
+.nav-btn span { font-size: 18px; }
+
+.page { display: none; padding: 16px; padding-bottom: 40px; }
+.page.active { display: block; }
+
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.summary-card {
+  background: white; border-radius: 12px; padding: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08); text-align: center;
+}
+.summary-card .label { font-size: 11px; color: #666; margin-bottom: 4px; }
+.summary-card .value { font-size: 18px; font-weight: 700; color: #0d5c8a; }
+.summary-card .sub { font-size: 11px; color: #20B2AA; margin-top: 2px; }
+.summary-card.highlight { background: linear-gradient(135deg, #0d5c8a, #20B2AA); }
+.summary-card.highlight .label { color: rgba(255,255,255,0.7); }
+.summary-card.highlight .value { color: white; }
+.summary-card.highlight .sub { color: #00C853; }
+
+/* Age badges */
+.age-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 10px;
+  font-size: 10px; font-weight: 700;
+}
+.age-red { background: #ffe5e5; color: #e53e3e; }
+.age-orange { background: #fff3e0; color: #dd6b20; }
+.age-yellow { background: #fffff0; color: #d69e2e; }
+.age-green { background: #e6f7f7; color: #20B2AA; }
+
+.customer-card {
+  background: white; border-radius: 12px; padding: 14px;
+  margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  border-left: 4px solid #20B2AA;
+}
+.customer-card.age-90 { border-left-color: #e53e3e; }
+.customer-card.age-60 { border-left-color: #dd6b20; }
+.customer-card.age-30 { border-left-color: #d69e2e; }
+
+.customer-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.customer-name { font-weight: 600; color: #0d5c8a; font-size: 14px; flex: 1; margin-right: 8px; }
+.customer-amount { font-weight: 700; color: #e53e3e; font-size: 15px; white-space: nowrap; }
+.customer-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+.customer-meta { font-size: 11px; color: #888; }
+.customer-actions { display: flex; gap: 6px; }
+.btn-call {
+  padding: 5px 10px; background: #25D366; color: white;
+  border: none; border-radius: 6px; font-size: 11px; cursor: pointer;
+}
+.btn-collect-small {
+  padding: 5px 10px; background: #0d5c8a; color: white;
+  border: none; border-radius: 6px; font-size: 11px; cursor: pointer;
+}
+.btn-add-phone {
+  padding: 5px 10px; background: #e2e8f0; color: #555;
+  border: none; border-radius: 6px; font-size: 11px; cursor: pointer;
+}
+
+/* Invoice list */
+.invoice-list { margin-top: 8px; }
+.invoice-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 10px; background: #f7fafc; border-radius: 6px; margin-bottom: 4px;
+  font-size: 12px;
+}
+.invoice-item .inv-no { color: #0d5c8a; font-weight: 600; }
+.invoice-item .inv-amt { color: #e53e3e; font-weight: 700; }
+.invoice-item .inv-age { color: #888; }
+
+.form-card {
+  background: white; border-radius: 12px; padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin-bottom: 12px;
+}
+.form-title { font-size: 16px; font-weight: 700; color: #0d5c8a; margin-bottom: 14px; }
+.form-group { margin-bottom: 12px; }
+label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 4px; }
+select, input {
+  width: 100%; padding: 10px 12px; border: 1.5px solid #e2e8f0;
+  border-radius: 8px; font-size: 14px; color: #333; background: white;
+}
+select:focus, input:focus { outline: none; border-color: #20B2AA; }
+
+.customer-info {
+  background: #f7fafc; border-radius: 8px; padding: 10px;
+  margin-top: 8px; font-size: 13px; color: #555;
+}
+.outstanding-text { color: #e53e3e; font-weight: 700; font-size: 15px; }
+.amount-display {
+  background: linear-gradient(135deg, #0d5c8a, #20B2AA);
+  border-radius: 8px; padding: 12px; text-align: center;
+  color: white; font-size: 24px; font-weight: 700; margin-top: 8px;
+}
+.payment-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+.method-btn {
+  padding: 10px 4px; border: 2px solid #e2e8f0; border-radius: 8px;
+  background: white; cursor: pointer; font-size: 12px; text-align: center;
+}
+.method-btn.selected { border-color: #20B2AA; background: #e6f7f7; color: #0d5c8a; font-weight: 600; }
+.btn-collect {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, #20B2AA, #0d5c8a);
+  color: white; border: none; border-radius: 10px;
+  font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 8px;
+}
+
+/* Receipt */
+.receipt-overlay {
+  display: none; position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%; background: rgba(0,0,0,0.7);
+  z-index: 1000; overflow-y: auto; padding: 20px;
+}
+.receipt-overlay.show { display: flex; align-items: flex-start; justify-content: center; }
+.receipt-box {
+  background: white; border-radius: 16px; padding: 20px;
+  width: 100%; max-width: 380px; margin: auto;
+}
+.receipt-header { text-align: center; margin-bottom: 16px; }
+.receipt-brand { font-size: 22px; font-weight: 800; }
+.receipt-brand .at { color: #0d5c8a; }
+.receipt-brand .tech { color: #20B2AA; }
+.receipt-company { font-size: 11px; color: #666; }
+.receipt-subtitle { font-size: 12px; color: #888; margin-top: 4px; }
+.receipt-divider { border: none; border-top: 1.5px dashed #ddd; margin: 12px 0; }
+.receipt-no { text-align: center; font-size: 12px; color: #888; margin-bottom: 12px; }
+.receipt-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+.receipt-row .key { color: #666; }
+.receipt-row .val { font-weight: 600; color: #333; text-align: right; max-width: 65%; }
+.receipt-amount-box {
+  background: linear-gradient(135deg, #0d5c8a, #20B2AA);
+  border-radius: 10px; padding: 14px; text-align: center; color: white; margin: 12px 0;
+}
+.receipt-amount-box .amt-label { font-size: 11px; opacity: 0.8; }
+.receipt-amount-box .amt-value { font-size: 26px; font-weight: 700; }
+.receipt-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.btn-whatsapp { padding: 12px; background: #25D366; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn-save-sheet { padding: 12px; background: #0d5c8a; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn-close-receipt { width: 100%; padding: 10px; background: #f0f4f8; color: #666; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; margin-top: 8px; }
+
+/* History */
+.history-filter { display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
+.filter-chip { padding: 6px 14px; border: 1.5px solid #e2e8f0; border-radius: 20px; background: white; font-size: 12px; cursor: pointer; white-space: nowrap; color: #555; }
+.filter-chip.active { border-color: #20B2AA; background: #e6f7f7; color: #0d5c8a; font-weight: 600; }
+.history-item { background: white; border-radius: 12px; padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border-left: 4px solid #20B2AA; }
+.history-item.local { border-left-color: #f6ad55; }
+.history-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.history-customer { font-weight: 600; color: #0d5c8a; font-size: 14px; }
+.history-amount { font-weight: 700; color: #20B2AA; font-size: 16px; }
+.history-bottom { display: flex; justify-content: space-between; align-items: center; }
+.history-meta { font-size: 11px; color: #888; }
+.history-badge { font-size: 10px; padding: 3px 8px; border-radius: 12px; font-weight: 600; }
+.badge-synced { background: #e6f7f7; color: #1a9a93; }
+.badge-local { background: #fef3c7; color: #d97706; }
+
+/* Phone modal */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.show { display: flex; }
+.modal-box { background: white; border-radius: 16px; padding: 20px; width: 100%; max-width: 320px; }
+.modal-box h3 { font-size: 16px; color: #0d5c8a; margin-bottom: 14px; }
+.modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.btn-modal-save { padding: 10px; background: #0d5c8a; color: white; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; }
+.btn-modal-cancel { padding: 10px; background: #f0f4f8; color: #666; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; }
+
+.empty-state { text-align: center; padding: 40px 20px; color: #aaa; }
+.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+.section-title { font-size: 14px; font-weight: 700; color: #0d5c8a; margin: 16px 0 10px; }
+
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #0d5c8a; color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; z-index: 3000; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); white-space: nowrap; }
+.toast.show { display: block; animation: fadeInOut 2.5s ease; }
+@keyframes fadeInOut {
+  0% { opacity:0; transform:translateX(-50%) translateY(10px); }
+  20% { opacity:1; transform:translateX(-50%) translateY(0); }
+  80% { opacity:1; }
+  100% { opacity:0; }
+}
+
+/* Sync bar */
+.sync-bar {
+  background: #0a4a70; padding: 4px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 11px; color: rgba(255,255,255,0.8);
+}
+.sync-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  display: inline-block; margin-right: 5px; background: #aaa;
+}
+.sync-dot.syncing { background: #f6ad55; animation: pulse 1s infinite; }
+.sync-dot.ok { background: #48bb78; }
+.sync-dot.error { background: #e53e3e; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.btn-manual-sync {
+  background: rgba(255,255,255,0.15); border: none; color: white;
+  padding: 2px 10px; border-radius: 10px; font-size: 11px; cursor: pointer;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  display: none; position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%; background: rgba(13,92,138,0.85);
+  z-index: 500; align-items: center; justify-content: center;
+  flex-direction: column; gap: 14px;
+}
+.loading-overlay.show { display: flex; }
+.spinner {
+  width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.3);
+  border-top-color: #00C853; border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { color: white; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-brand">
+    <div class="login-title">AZHAA <span class="tech">TECH</span></div>
+    <div class="login-sub">IT SERVICES & SOLUTIONS</div>
+  </div>
+  <div class="login-card">
+    <h2>🔐 Sign In</h2>
+    <div class="login-group">
+      <label>Select User</label>
+      <select id="login-user">
+        <option value="">-- Select --</option>
+        <optgroup label="👔 Management">
+          <option value="MANAGER">Management</option>
+          <option value="ACCOUNTANT">Accountant</option>
+        </optgroup>
+        <optgroup label="💼 Sales Team">
+          <option value="AKSHAY">Akshay</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="login-group">
+      <label>PIN</label>
+      <input type="password" id="login-pin" placeholder="Enter PIN" inputmode="numeric" maxlength="4">
+    </div>
+    <button class="btn-login" onclick="doLogin()">Login →</button>
+    <div class="login-error" id="login-error">❌ Wrong PIN. Try again.</div>
+  </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Syncing data...</div>
+</div>
+
+<!-- MAIN APP -->
+<div class="app-screen" id="app-screen">
+  <div class="header">
+    <div class="header-text">
+      <div class="header-title">AZHAA <span class="tech">TECH</span></div>
+      <div class="header-sub">IT SERVICES & SOLUTIONS</div>
+    </div>
+    <div class="header-right">
+      <div class="user-badge" id="user-badge">User</div>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Sync status bar -->
+  <div class="sync-bar">
+    <div>
+      <span class="sync-dot" id="sync-dot"></span>
+      <span id="sync-status-text">Not synced</span>
+    </div>
+    <button class="btn-manual-sync" onclick="manualSync()">🔄 Sync Now</button>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn active" id="nav-dashboard" onclick="showPage('dashboard', this)"><span>📊</span>Dashboard</button>
+    <button class="nav-btn" id="nav-customers" onclick="showPage('customers', this)"><span>👥</span>Customers</button>
+    <button class="nav-btn" id="nav-collect" onclick="showPage('collect', this)"><span>💰</span>Collect</button>
+    <button class="nav-btn" id="nav-history" onclick="showPage('history', this)"><span>📋</span>History</button>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="page-dashboard" class="page active">
+    <div class="summary-grid">
+      <div class="summary-card highlight">
+        <div class="label">Total Outstanding</div>
+        <div class="value" id="total-outstanding">AED 0</div>
+        <div class="sub" id="total-customers-count">0 customers</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Collected Today</div>
+        <div class="value" id="collected-today" style="color:#20B2AA">AED 0</div>
+        <div class="sub" id="today-count">0 receipts</div>
+      </div>
+    </div>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="label">🔴 90+ Days</div>
+        <div class="value" id="age-90" style="color:#e53e3e">AED 0</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">🟠 60-90 Days</div>
+        <div class="value" id="age-60" style="color:#dd6b20">AED 0</div>
+      </div>
+    </div>
+    <div id="reset-section" style="display:none;margin-top:8px;text-align:center;">
+      <button onclick="resetAllData()" style="background:#e53e3e;color:white;border:none;border-radius:10px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;">🔄 Reset All Data</button>
+    </div>
+  </div>
+
+  <!-- Customers -->
+  <div id="page-customers" class="page">
+    <div class="section-title">👥 Customer List</div>
+    <div id="customer-list"></div>
+  </div>
+
+  <!-- Collect -->
+  <div id="page-collect" class="page">
+    <div class="form-card">
+      <div class="form-title">💰 New Collection</div>
+      <div class="form-group">
+        <label>Customer</label>
+        <select id="sel-customer" onchange="onCustomerChange()">
+          <option value="">-- Select Customer --</option>
+        </select>
+        <div id="customer-info" class="customer-info" style="display:none"></div>
+      </div>
+      <div class="form-group">
+        <label>Invoice (Optional - select specific invoice)</label>
+        <select id="sel-invoice">
+          <option value="">-- All Outstanding --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Amount (AED)</label>
+        <input type="number" id="inp-amount" placeholder="0.00" step="0.01" oninput="updateAmountDisplay()" inputmode="decimal">
+        <div id="amount-display" class="amount-display" style="display:none"></div>
+      </div>
+      <div class="form-group">
+        <label>Payment Method</label>
+        <div class="payment-methods">
+          <button class="method-btn" onclick="selectMethod('Cash', this)">💵<br>Cash</button>
+          <button class="method-btn" onclick="selectMethod('Cheque', this)">📄<br>Cheque</button>
+          <button class="method-btn" onclick="selectMethod('Transfer', this)">🏦<br>Transfer</button>
+        </div>
+      </div>
+      <div class="form-group" id="ref-group" style="display:none">
+        <label id="ref-label">Reference No.</label>
+        <input type="text" id="inp-ref" placeholder="Enter reference number">
+      </div>
+      <button class="btn-collect" onclick="generateReceipt()">Generate Receipt</button>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div id="page-history" class="page">
+    <div id="history-list"></div>
+  </div>
+</div>
+
+<!-- Receipt -->
+<div class="receipt-overlay" id="receipt-overlay">
+  <div class="receipt-box">
+    <div class="receipt-header">
+      <div class="receipt-brand"><span class="at">AZHAA </span><span class="tech">TECH</span></div>
+      <div class="receipt-company">IT SERVICES & SOLUTIONS</div>
+      <div class="receipt-subtitle">— Payment Receipt —</div>
+    </div>
+    <hr class="receipt-divider">
+    <div class="receipt-no" id="r-no"></div>
+    <div class="receipt-amount-box">
+      <div class="amt-label">Amount Collected</div>
+      <div class="amt-value" id="r-amount"></div>
+    </div>
+    <div class="receipt-row"><span class="key">Customer</span><span class="val" id="r-customer"></span></div>
+    <div class="receipt-row" id="r-inv-row" style="display:none"><span class="key">Invoice</span><span class="val" id="r-invoice"></span></div>
+    <div class="receipt-row"><span class="key">Method</span><span class="val" id="r-method"></span></div>
+    <div class="receipt-row" id="r-ref-row" style="display:none"><span class="key">Reference</span><span class="val" id="r-ref"></span></div>
+    <div class="receipt-row"><span class="key">Date & Time</span><span class="val" id="r-datetime"></span></div>
+    <div class="receipt-row"><span class="key">Collected by</span><span class="val" id="r-collectedby"></span></div>
+    <hr class="receipt-divider">
+    <div style="font-size:11px;text-align:center;color:#888">Thank you for your payment</div>
+    <div class="receipt-actions">
+      <button class="btn-whatsapp" onclick="shareWhatsApp()">📲 WhatsApp</button>
+      <button class="btn-save-sheet" id="btn-save">⏳ Saving...</button>
+    </div>
+    <button class="btn-close-receipt" onclick="closeReceipt()">Close</button>
+  </div>
+</div>
+
+<!-- Phone Modal -->
+<div class="modal-overlay" id="phone-modal">
+  <div class="modal-box">
+    <h3>📞 Add Phone Number</h3>
+    <div class="form-group">
+      <label id="phone-customer-label">Customer</label>
+      <input type="tel" id="inp-phone" placeholder="+971 XX XXX XXXX" inputmode="tel">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-save" onclick="savePhone()">Save</button>
+      <button class="btn-modal-cancel" onclick="closePhoneModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div style="position:fixed;bottom:10px;width:100%;text-align:center;font-size:13px;font-weight:600;color:white;pointer-events:none;z-index:5;" id="credit">by Noushad Omar</div>
+
+<script>
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbz6DXj693vTddFNU605Ulw83j1zWVf0g1z8uEKWVRPR_n_HykrBC6-Yy_5f3l2Bm3s/exec";
+const POLL_INTERVAL = 30000;
+
+const PINS = { MANAGER:'2523', ACCOUNTANT:'3277', AKSHAY:'4646' };
+const MANAGER_USERS = ['MANAGER', 'ACCOUNTANT'];
+const USER_LABELS = { MANAGER:'Management', ACCOUNTANT:'Accountant', AKSHAY:'Akshay' };
+
+let currentUser = null;
+let isManager = false;
+let selectedMethod = '';
+let pendingReceipt = null;
+let receiptSaved = false;
+let editingPhoneCustomer = null;
+let pollTimer = null;
+let isSyncing = false;
+
+const initialData = [
+  {name:"AL CAZAR BAKERY", invoices:[{ref:"10244", date:"17-Mar-26", amount:168.00, age:77}]},
+  {name:"CASH CUSTOMER", invoices:[{ref:"10191", date:"23-Oct-25", amount:210.00, age:222}]},
+  {name:"ENERTEK SWITCHGEAR & CONTROLS LLC", invoices:[{ref:"10242", date:"06-May-26", amount:262.50, age:27}]},
+  {name:"MADINAT BROADWAY BUILDINGS MAINTENANCE LLC", invoices:[{ref:"10223", date:"15-Jan-26", amount:2310.00, age:138}]},
+  {name:"MADINATH BROAD WAY TECH", invoices:[{ref:"10172", date:"25-Jun-25", amount:367.50, age:342}]},
+  {name:"MAK POWER BUILDING MATERIAL AND EQUIPMENT TRADING", invoices:[{ref:"11", date:"14-May-26", amount:250.00, age:384}]},
+  {name:"MIK GARAGE", invoices:[{ref:"10127", date:"04-Jan-26", amount:400.00, age:514}]},
+  {name:"POWERTECH SWITCHGEAR INDUSTRIES", invoices:[
+    {ref:"10239", date:"15-Apr-26", amount:367.50, age:48},
+    {ref:"10240", date:"21-Apr-26", amount:2415.00, age:42}
+  ]},
+  {name:"SAFA AUTOMOTIVE", invoices:[
+    {ref:"10205", date:"28-Nov-25", amount:1470.00, age:186},
+    {ref:"10206", date:"29-Nov-25", amount:367.50, age:185}
+  ]},
+  {name:"SKYTECH IT SOLUTIONS", invoices:[
+    {ref:"10224", date:"20-Jan-26", amount:262.50, age:133},
+    {ref:"10229", date:"28-Feb-26", amount:315.00, age:94},
+    {ref:"10233", date:"12-Mar-26", amount:367.50, age:82},
+    {ref:"10236", date:"16-Mar-26", amount:315.00, age:78},
+    {ref:"10241", date:"23-Apr-26", amount:525.00, age:40},
+    {ref:"10245", date:"14-May-26", amount:2310.00, age:19}
+  ]},
+  {name:"Sun & Stars Cargo & Packaging Services", invoices:[{ref:"10227", date:"18-Feb-26", amount:3857.00, age:104}]},
+  {name:"TECH PAPPPA", invoices:[{ref:"10214", date:"18-Dec-25", amount:1050.00, age:166}]}
+];
+
+let customers = JSON.parse(JSON.stringify(initialData));
+let collections = [];
+
+function loadData() {
+  try {
+    const d = localStorage.getItem('azhaatech_data');
+    if (d) customers = JSON.parse(d);
+    const c = localStorage.getItem('azhaatech_coll');
+    if (c) collections = JSON.parse(c);
+  } catch(e) {}
+}
+
+function saveData() {
+  localStorage.setItem('azhaatech_data', JSON.stringify(customers));
+  localStorage.setItem('azhaatech_coll', JSON.stringify(collections));
+}
+
+// ─── SYNC STATUS ──────────────────────────────────────────────────────────────
+function setSyncStatus(state, msg) {
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-status-text');
+  if (!dot) return;
+  dot.className = 'sync-dot ' + state;
+  txt.textContent = msg;
+}
+
+// ─── SYNC FROM SHEET ──────────────────────────────────────────────────────────
+function syncFromSheet(showLoader) {
+  if (isSyncing) return;
+  isSyncing = true;
+  setSyncStatus('syncing', 'Syncing...');
+  if (showLoader) {
+    document.getElementById('loading-overlay').classList.add('show');
+    document.getElementById('loading-text').textContent = 'Loading data from server...';
+  }
+  fetch(SHEET_URL + '?action=read', { method:'GET', mode:'cors', cache:'no-cache' })
+  .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+  .then(data => {
+    isSyncing = false;
+    if (showLoader) document.getElementById('loading-overlay').classList.remove('show');
+    if (data.status === 'success' && Array.isArray(data.data)) {
+      // Reset to initial, apply sheet collections
+      customers = JSON.parse(JSON.stringify(initialData));
+      data.data.forEach(c => {
+        const amount = parseFloat(c.amount || 0);
+        const custObj = customers.find(x => x.name === c.customer);
+        if (custObj) {
+          let remaining = amount;
+          if (c.invoiceRef) {
+            const inv = custObj.invoices.find(i => i.ref === c.invoiceRef);
+            if (inv) inv.amount = Math.max(0, inv.amount - remaining);
+          } else {
+            custObj.invoices.forEach(inv => {
+              if (remaining <= 0) return;
+              const deduct = Math.min(inv.amount, remaining);
+              inv.amount -= deduct; remaining -= deduct;
+            });
+          }
+        }
+      });
+      collections = data.data.map(c => ({ ...c, synced: true }));
+      saveData();
+      renderDashboard();
+      populateCustomerDropdown();
+      if (document.getElementById('page-customers').classList.contains('active')) renderCustomers();
+      if (document.getElementById('page-history').classList.contains('active')) renderHistory();
+      const timeStr = new Date().toLocaleTimeString('en-AE', {hour:'2-digit', minute:'2-digit'});
+      setSyncStatus('ok', 'Synced ' + timeStr);
+    } else { setSyncStatus('error', 'Sync failed'); }
+  })
+  .catch(err => {
+    isSyncing = false;
+    if (showLoader) document.getElementById('loading-overlay').classList.remove('show');
+    setSyncStatus('error', 'Offline – local data');
+  });
+}
+
+function manualSync() { syncFromSheet(false); showToast('🔄 Syncing...'); }
+
+function startPolling() {
+  stopPolling();
+  pollTimer = setInterval(() => { if (currentUser) syncFromSheet(false); }, POLL_INTERVAL);
+}
+
+function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+
+// ─── SAVE TO SHEET ────────────────────────────────────────────────────────────
+function saveToSheet(receipt) {
+  return new Promise((resolve, reject) => {
+    const body = new URLSearchParams({
+      action: 'write',
+      receiptNo: receipt.receiptNo,
+      date: receipt.date,
+      time: receipt.time,
+      customer: receipt.customer,
+      salesman: receipt.salesman,
+      amount: receipt.amount,
+      method: receipt.method,
+      ref: receipt.ref || '',
+      invoiceRef: receipt.invoiceRef || '',
+      timestamp: receipt.timestamp || ''
+    });
+    fetch(SHEET_URL, { method:'POST', mode:'cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: body.toString() })
+    .then(r => r.json())
+    .then(data => { if (data.status === 'success') resolve(true); else reject(); })
+    .catch(() => {
+      fetch(SHEET_URL + '?' + body.toString(), { method:'GET', mode:'cors', cache:'no-cache' })
+      .then(r => r.json())
+      .then(data => { if (data.status === 'success') resolve(true); else reject(); })
+      .catch(reject);
+    });
+  });
+}
+
+function fmt(n) {
+  return 'AED ' + parseFloat(n).toLocaleString('en-AE', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function getAgeClass(age) {
+  if (age >= 90) return 'age-90';
+  if (age >= 60) return 'age-60';
+  if (age >= 30) return 'age-30';
+  return '';
+}
+
+function getAgeBadge(age) {
+  if (age >= 90) return `<span class="age-badge age-red">${age}d</span>`;
+  if (age >= 60) return `<span class="age-badge age-orange">${age}d</span>`;
+  if (age >= 30) return `<span class="age-badge age-yellow">${age}d</span>`;
+  return `<span class="age-badge age-green">${age}d</span>`;
+}
+
+function doLogin() {
+  const user = document.getElementById('login-user').value;
+  const pin = document.getElementById('login-pin').value;
+  const err = document.getElementById('login-error');
+  if (!user) { err.textContent = '❌ Please select a user.'; err.style.display = 'block'; return; }
+  if (PINS[user] !== pin) { err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  currentUser = user;
+  isManager = MANAGER_USERS.includes(user);
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+  document.getElementById('credit').style.color = '#555';
+  const badge = document.getElementById('user-badge');
+  badge.textContent = '👤 ' + USER_LABELS[user];
+  if (isManager) { badge.className = 'user-badge manager'; document.getElementById('reset-section').style.display = 'block'; }
+  else { badge.className = 'user-badge'; document.getElementById('reset-section').style.display = 'none'; }
+  populateCustomerDropdown();
+  renderDashboard();
+  loadData();
+  syncFromSheet(true);
+  startPolling();
+}
+
+function doLogout() {
+  stopPolling();
+  currentUser = null; isManager = false;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('credit').style.color = 'white';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pin').value = '';
+  setSyncStatus('', 'Not synced');
+}
+
+document.getElementById('login-pin').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+function showPage(page, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  btn.classList.add('active');
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'customers') renderCustomers();
+  if (page === 'history') renderHistory();
+}
+
+function renderDashboard() {
+  let total = 0, age90 = 0, age60 = 0;
+  let activeCust = 0;
+  customers.forEach(c => {
+    const rem = c.invoices.reduce((a, i) => a + i.amount, 0);
+    if (rem > 0) {
+      total += rem; activeCust++;
+      c.invoices.forEach(i => {
+        if (i.age >= 90) age90 += i.amount;
+        else if (i.age >= 60) age60 += i.amount;
+      });
+    }
+  });
+  const today = new Date().toDateString();
+  let todayAmt = 0, todayCount = 0;
+  collections.forEach(c => {
+    if (new Date(c.timestamp).toDateString() === today) { todayAmt += c.amount; todayCount++; }
+  });
+  document.getElementById('total-outstanding').textContent = fmt(total);
+  document.getElementById('total-customers-count').textContent = activeCust + ' customers';
+  document.getElementById('collected-today').textContent = fmt(todayAmt);
+  document.getElementById('today-count').textContent = todayCount + ' receipts';
+  document.getElementById('age-90').textContent = fmt(age90);
+  document.getElementById('age-60').textContent = fmt(age60);
+}
+
+function renderCustomers() {
+  const list = document.getElementById('customer-list');
+  const active = customers.filter(c => c.invoices.reduce((a,i) => a+i.amount, 0) > 0);
+  if (active.length === 0) { list.innerHTML = '<div class="empty-state"><div class="icon">✅</div><div>All cleared!</div></div>'; return; }
+
+  list.innerHTML = active.map((c, idx) => {
+    const total = c.invoices.reduce((a, i) => a + i.amount, 0);
+    const maxAge = Math.max(...c.invoices.map(i => i.age));
+    const ageClass = getAgeClass(maxAge);
+    const invoicesHtml = c.invoices.filter(i => i.amount > 0).map(i =>
+      `<div class="invoice-item">
+        <span class="inv-no">Inv# ${i.ref}</span>
+        <span class="inv-age">${getAgeBadge(i.age)}</span>
+        <span class="inv-amt">${fmt(i.amount)}</span>
+      </div>`
+    ).join('');
+
+    const phoneBtn = c.phone
+      ? `<button class="btn-call" onclick="callCustomer('${c.phone}')">📞 Call</button>`
+      : `<button class="btn-add-phone" onclick="openPhoneModal(${customers.indexOf(c)})">+ Phone</button>`;
+
+    return `<div class="customer-card ${ageClass}">
+      <div class="customer-top">
+        <span class="customer-name">${c.name}</span>
+        <span class="customer-amount">${fmt(total)}</span>
+      </div>
+      <div class="invoice-list">${invoicesHtml}</div>
+      <div class="customer-bottom">
+        <span class="customer-meta">${getAgeBadge(maxAge)} oldest</span>
+        <div class="customer-actions">
+          ${phoneBtn}
+          <button class="btn-collect-small" onclick="quickCollect('${c.name}')">💰 Collect</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function quickCollect(customerName) {
+  document.querySelectorAll('.nav-btn')[2].click();
+  setTimeout(() => {
+    document.getElementById('sel-customer').value = customerName;
+    onCustomerChange();
+  }, 100);
+}
+
+function openPhoneModal(idx) {
+  editingPhoneCustomer = idx;
+  document.getElementById('phone-customer-label').textContent = customers[idx].name;
+  document.getElementById('inp-phone').value = customers[idx].phone || '';
+  document.getElementById('phone-modal').classList.add('show');
+}
+
+function closePhoneModal() {
+  document.getElementById('phone-modal').classList.remove('show');
+  editingPhoneCustomer = null;
+}
+
+function savePhone() {
+  const phone = document.getElementById('inp-phone').value.trim();
+  if (editingPhoneCustomer !== null) {
+    customers[editingPhoneCustomer].phone = phone;
+    saveData();
+    renderCustomers();
+    showToast('✅ Phone number saved!');
+  }
+  closePhoneModal();
+}
+
+function callCustomer(phone) {
+  window.open('tel:' + phone);
+}
+
+function populateCustomerDropdown() {
+  const sel = document.getElementById('sel-customer');
+  sel.innerHTML = '<option value="">-- Select Customer --</option>';
+  customers.filter(c => c.invoices.reduce((a,i) => a+i.amount,0) > 0).forEach(c => {
+    const total = c.invoices.reduce((a,i) => a+i.amount,0);
+    const o = document.createElement('option');
+    o.value = c.name;
+    o.textContent = c.name + ' (' + fmt(total) + ')';
+    sel.appendChild(o);
+  });
+}
+
+function onCustomerChange() {
+  const name = document.getElementById('sel-customer').value;
+  const info = document.getElementById('customer-info');
+  const invSel = document.getElementById('sel-invoice');
+  invSel.innerHTML = '<option value="">-- All Outstanding --</option>';
+
+  if (name) {
+    const c = customers.find(x => x.name === name);
+    if (c) {
+      const total = c.invoices.reduce((a,i) => a+i.amount,0);
+      info.innerHTML = 'Outstanding: <span class="outstanding-text">' + fmt(total) + '</span>';
+      info.style.display = 'block';
+      document.getElementById('inp-amount').value = total.toFixed(2);
+      updateAmountDisplay();
+      c.invoices.filter(i => i.amount > 0).forEach(i => {
+        const o = document.createElement('option');
+        o.value = i.ref;
+        o.textContent = 'Inv# ' + i.ref + ' - ' + fmt(i.amount) + ' (' + i.age + ' days)';
+        invSel.appendChild(o);
+      });
+    }
+  } else { info.style.display = 'none'; }
+}
+
+document.getElementById('sel-invoice').addEventListener('change', function() {
+  const custName = document.getElementById('sel-customer').value;
+  const invRef = this.value;
+  if (custName && invRef) {
+    const c = customers.find(x => x.name === custName);
+    const inv = c?.invoices.find(i => i.ref === invRef);
+    if (inv) { document.getElementById('inp-amount').value = inv.amount.toFixed(2); updateAmountDisplay(); }
+  } else if (custName) {
+    const c = customers.find(x => x.name === custName);
+    const total = c?.invoices.reduce((a,i) => a+i.amount,0) || 0;
+    document.getElementById('inp-amount').value = total.toFixed(2);
+    updateAmountDisplay();
+  }
+});
+
+function updateAmountDisplay() {
+  const val = parseFloat(document.getElementById('inp-amount').value);
+  const disp = document.getElementById('amount-display');
+  if (val > 0) { disp.textContent = fmt(val); disp.style.display = 'block'; }
+  else { disp.style.display = 'none'; }
+}
+
+function selectMethod(m, btn) {
+  selectedMethod = m;
+  document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const rg = document.getElementById('ref-group');
+  if (m === 'Cheque') { document.getElementById('ref-label').textContent = 'Cheque Number'; rg.style.display = 'block'; }
+  else if (m === 'Transfer') { document.getElementById('ref-label').textContent = 'Transaction Reference'; rg.style.display = 'block'; }
+  else { rg.style.display = 'none'; }
+}
+
+function generateReceipt() {
+  const custName = document.getElementById('sel-customer').value;
+  const amount = parseFloat(document.getElementById('inp-amount').value);
+  const invRef = document.getElementById('sel-invoice').value;
+  const ref = document.getElementById('inp-ref').value;
+  if (!custName) { showToast('Please select a customer'); return; }
+  if (!amount || amount <= 0) { showToast('Please enter a valid amount'); return; }
+  if (!selectedMethod) { showToast('Please select payment method'); return; }
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-AE');
+  const timeStr = now.toLocaleTimeString('en-AE', {hour:'2-digit', minute:'2-digit'});
+  const rcptNo = 'AT-' + now.getFullYear().toString().slice(-2) +
+    String(now.getMonth()+1).padStart(2,'0') +
+    String(now.getDate()).padStart(2,'0') + '-' +
+    String(collections.length + 1).padStart(3,'0');
+
+  pendingReceipt = {
+    receiptNo: rcptNo, date: dateStr, time: timeStr,
+    customer: custName, salesman: USER_LABELS[currentUser],
+    invoiceRef: invRef, amount, method: selectedMethod,
+    ref, timestamp: now.toISOString(), synced: false
+  };
+  receiptSaved = false;
+
+  document.getElementById('r-no').textContent = rcptNo;
+  document.getElementById('r-amount').textContent = fmt(amount);
+  document.getElementById('r-customer').textContent = custName;
+  document.getElementById('r-method').textContent = selectedMethod;
+  document.getElementById('r-datetime').textContent = dateStr + ' ' + timeStr;
+  document.getElementById('r-collectedby').textContent = USER_LABELS[currentUser];
+  if (invRef) { document.getElementById('r-invoice').textContent = 'Inv# ' + invRef; document.getElementById('r-inv-row').style.display = 'flex'; }
+  else { document.getElementById('r-inv-row').style.display = 'none'; }
+  if (ref) { document.getElementById('r-ref').textContent = ref; document.getElementById('r-ref-row').style.display = 'flex'; }
+  else { document.getElementById('r-ref-row').style.display = 'none'; }
+
+  const btn = document.getElementById('btn-save');
+  btn.textContent = '⏳ Saving...'; btn.disabled = true;
+  document.getElementById('receipt-overlay').classList.add('show');
+  autoSaveToSheet();
+}
+
+function autoSaveToSheet() {
+  saveToSheet(pendingReceipt)
+  .then(() => {
+    pendingReceipt.synced = true;
+    commitReceipt();
+    document.getElementById('btn-save').textContent = '✅ Saved!';
+    document.getElementById('btn-save').disabled = true;
+    showToast('✅ Saved to Google Sheets!');
+    setSyncStatus('ok', 'Saved just now');
+  })
+  .catch(() => {
+    pendingReceipt.synced = false;
+    commitReceipt();
+    const btn = document.getElementById('btn-save');
+    btn.textContent = '🔄 Retry'; btn.disabled = false;
+    btn.onclick = retrySave;
+    showToast('⚠️ Saved locally. Tap Retry.');
+    setSyncStatus('error', 'Sheet save failed');
+  });
+}
+
+function retrySave() {
+  const btn = document.getElementById('btn-save');
+  btn.textContent = '⏳ Retrying...'; btn.disabled = true;
+  const last = collections[collections.length - 1];
+  saveToSheet(last)
+  .then(() => {
+    last.synced = true; saveData();
+    btn.textContent = '✅ Saved!';
+    showToast('✅ Saved to Google Sheets!');
+    setSyncStatus('ok', 'Synced');
+  })
+  .catch(() => {
+    btn.textContent = '🔄 Retry'; btn.disabled = false;
+    btn.onclick = retrySave;
+    showToast('❌ Still offline. Try again.');
+  });
+}
+
+function commitReceipt() {
+  if (receiptSaved) return;
+  receiptSaved = true;
+  const c = customers.find(x => x.name === pendingReceipt.customer);
+  if (c) {
+    let remaining = pendingReceipt.amount;
+    if (pendingReceipt.invoiceRef) {
+      const inv = c.invoices.find(i => i.ref === pendingReceipt.invoiceRef);
+      if (inv) inv.amount = Math.max(0, inv.amount - remaining);
+    } else {
+      c.invoices.forEach(inv => {
+        if (remaining <= 0) return;
+        const deduct = Math.min(inv.amount, remaining);
+        inv.amount -= deduct; remaining -= deduct;
+      });
+    }
+  }
+  collections.push(pendingReceipt);
+  saveData();
+  resetCollectForm();
+  populateCustomerDropdown();
+}
+
+function shareWhatsApp() {
+  if (!pendingReceipt) return;
+  const r = pendingReceipt;
+  const msg = "*AZHAA TECH*\n*Payment Receipt*\n\nReceipt No: " + r.receiptNo +
+    "\nDate: " + r.date + " " + r.time +
+    "\nCustomer: " + r.customer +
+    (r.invoiceRef ? "\nInvoice: Inv# " + r.invoiceRef : "") +
+    "\nAmount: " + fmt(r.amount) +
+    "\nMethod: " + r.method +
+    (r.ref ? "\nRef: " + r.ref : "") +
+    "\n\n_Thank you for your payment_";
+  window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(msg), '_blank');
+}
+
+function closeReceipt() {
+  if (!receiptSaved && pendingReceipt) { pendingReceipt.synced = false; commitReceipt(); }
+  document.getElementById('receipt-overlay').classList.remove('show');
+  pendingReceipt = null;
+  document.getElementById('btn-save').onclick = null;
+}
+
+function resetCollectForm() {
+  document.getElementById('sel-customer').value = '';
+  document.getElementById('sel-invoice').innerHTML = '<option value="">-- All Outstanding --</option>';
+  document.getElementById('inp-amount').value = '';
+  document.getElementById('inp-ref').value = '';
+  document.getElementById('customer-info').style.display = 'none';
+  document.getElementById('amount-display').style.display = 'none';
+  document.getElementById('ref-group').style.display = 'none';
+  document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('selected'));
+  selectedMethod = '';
+}
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  const filtered = [...collections].reverse();
+  if (filtered.length === 0) { list.innerHTML = '<div class="empty-state"><div class="icon">📋</div><div>No collections yet</div></div>'; return; }
+  list.innerHTML = filtered.map(c => `
+    <div class="history-item ${c.synced ? '' : 'local'}">
+      <div class="history-top">
+        <span class="history-customer">${c.customer}</span>
+        <span class="history-amount">${fmt(c.amount)}</span>
+      </div>
+      <div class="history-bottom">
+        <span class="history-meta">${c.method} • ${c.date}${c.invoiceRef ? ' • Inv#'+c.invoiceRef : ''}</span>
+        <span class="history-badge ${c.synced ? 'badge-synced' : 'badge-local'}">${c.synced ? '☁️ Synced' : '💾 Local'}</span>
+      </div>
+    </div>`).join('');
+}
+
+function resetAllData() {
+  customers = JSON.parse(JSON.stringify(initialData));
+  collections = [];
+  localStorage.removeItem('azhaatech_data');
+  localStorage.removeItem('azhaatech_coll');
+  populateCustomerDropdown();
+  renderDashboard();
+  showToast('✅ Data reset to original!');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('show');
+  void t.offsetWidth;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Page visibility: re-sync when user comes back
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && currentUser) syncFromSheet(false);
+});
+
+loadData();
+</script>
+</body>
+</html>
